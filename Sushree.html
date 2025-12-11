@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Sushree!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- General Page Styling --- */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            /* Initial State: Black Sky */
+            background: #000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Smooth transition for background color change */
+            transition: background 1.5s ease-in-out;
+        }
+
+        /* The state after the rocket blasts */
+        body.party-mode {
+            background: linear-gradient(to bottom, #87CEEB, #E0F7FA);
+        }
+
+        /* --- 1. Background: Waving Cats --- */
+        .cats-container {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 40%;
+            z-index: 1;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            pointer-events: none;
+            /* Initially hidden in black sky mode */
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        body.party-mode .cats-container {
+            opacity: 1;
+        }
+
+        .cat {
+            font-size: 7rem;
+            animation: waveTail 2s infinite ease-in-out;
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.5));
+            transform-origin: bottom center;
+        }
+
+        .cat:nth-child(odd) { animation-duration: 1.6s; }
+        .cat:nth-child(even) { animation-duration: 2.3s; }
+
+        @keyframes waveTail {
+            0%, 100% { transform: rotate(-5deg) translateY(0); }
+            50% { transform: rotate(5deg) translateY(-15px); }
+        }
+
+        /* --- 2. The Rocket Sequence Elements --- */
+        #rocket {
+            position: absolute;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 5rem;
+            z-index: 50;
+            /* Hidden until JS triggers it */
+            visibility: hidden;
+        }
+
+        #rocket.launching {
+            visibility: visible;
+            animation: rocketUp 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes rocketUp {
+            0% { bottom: -100px; transform: translateX(-50%) scale(1); }
+            100% { bottom: 50%; transform: translateX(-50%) scale(0.5); }
+        }
+
+        #explosion {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 10rem;
+            z-index: 51;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #explosion.bang {
+            animation: explodeAnim 0.8s ease-out forwards;
+        }
+
+        @keyframes explodeAnim {
+            0% { transform: translate(-50%, -50%) scale(0.1); opacity: 1; }
+            50% { opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+        }
+
+
+        /* --- 3. The Main Message --- */
+        .message-container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            /* Hidden initially */
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 6rem;
+            color: #ff006e;
+            text-shadow: 4px 4px 0px #fff, 6px 6px 0px rgba(0,0,0,0.2);
+            font-weight: 900;
+            margin: 0;
+            line-height: 1.1;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        h1:hover { font-size: 6.2rem; }
+
+        /* The bounce animation for the main text */
+        .pop-out-anim {
+            visibility: visible;
+            animation: bounceIn 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+
+        /* --- 4. Floating Balloons (Active after sequence) --- */
+        .balloon {
+            position: absolute;
+            bottom: -100px;
+            width: 60px;
+            height: 80px;
+            background-color: #ff5e5e;
+            border-radius: 50%;
+            z-index: 5;
+            animation: floatUp 7s linear forwards;
+            cursor: crosshair;
+            transition: transform 0.1s;
+            /* Only show balloons when party mode is active */
+            display: none; 
+        }
+        body.party-mode .balloon { display: block; }
+
+        .balloon:active { transform: scale(0.9); }
+        .balloon::before {
+            content: ''; position: absolute; bottom: -10px; left: 50%;
+            transform: translateX(-50%); width: 2px; height: 40px; background-color: #555;
+        }
+        .balloon::after {
+            content: ''; position: absolute; top: 10px; left: 10px; width: 15px; height: 25px;
+            background: rgba(255,255,255,0.4); border-radius: 50%; transform: rotate(45deg);
+        }
+
+        @keyframes floatUp {
+            0% { bottom: -100px; transform: translateX(0) rotate(0deg); }
+            100% { bottom: 110vh; transform: translateX(20px) rotate(10deg); }
+        }
+
+        /* --- 5. Text that appears when balloon pops --- */
+        .pop-text {
+            position: absolute;
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.8rem;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7), 0 0 10px var(--balloon-color);
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 20;
+            white-space: nowrap;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="rocket">🚀</div>
+    <div id="explosion">💥</div>
+
+    <div class="cats-container">
+        <div class="cat">🐱</div>
+        <div class="cat">😸</div>
+        <div class="cat">🐈</div>
+        <div class="cat">😻</div>
+        <div class="cat">🐈‍⬛</div>
+    </div>
+
+    <div class="message-container" id="messageBox">
+        <h1>Happy Birthday<br>Sushree! 🎂</h1>
+    </div>
+
+    <script>
+        const balloonColors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FF006E'];
+        // Updated phrases list
+        const phrases = ["Happy Birthday!", "26th Birthday!", "From Sas ❤️", "From Somu 💙"];
+        let phraseIndex = 0;
+        let balloonInterval; // Define globally to control later
+
+        // --- Balloon Logic ---
+        function spawnBalloon() {
+            // Only spawn if party mode is on
+            if(!document.body.classList.contains('party-mode')) return;
+
+            const b = document.createElement('div');
+            b.classList.add('balloon');
+            
+            const color = balloonColors[Math.floor(Math.random() * balloonColors.length)];
+            const leftPos = Math.random() * 90;
+            const size = Math.random() * 0.4 + 0.8;
+
+            b.style.backgroundColor = color;
+            b.style.left = leftPos + '%';
+            b.style.transform = `scale(${size})`;
+            b.style.setProperty('--balloon-color', color); 
+            
+            // Click Handler (Pop and show text)
+            b.addEventListener('click', (e) => {
+                const rect = b.getBoundingClientRect();
+                b.remove();
+                showPopText(rect.left + rect.width / 2, rect.top + rect.height / 2, color);
+            });
+
+            document.body.appendChild(b);
+            // Cleanup old balloons
+            setTimeout(() => { if(b.parentNode) b.remove(); }, 7000);
+        }
+
+        function showPopText(x, y, color) {
+            const textSpan = document.createElement('span');
+            textSpan.classList.add('pop-text');
+            textSpan.innerText = phrases[phraseIndex];
+            textSpan.style.setProperty('--balloon-color', color);
+            textSpan.style.left = x + 'px';
+            textSpan.style.top = y + 'px';
+            textSpan.style.transform = 'translate(-50%, -50%)';
+            
+            document.body.appendChild(textSpan);
+
+            textSpan.animate([
+                { opacity: 1, transform: 'translate(-50%, -50%) scale(0.8)' },
+                { opacity: 0, transform: 'translate(-50%, -150px) scale(1.3)' }
+            ], { duration: 1500, easing: 'ease-out' }).onfinish = () => textSpan.remove();
+
+            phraseIndex = (phraseIndex + 1) % phrases.length;
+        }
+
+        // --- The Main Sequence Orchestrator ---
+        window.onload = function() {
+            const rocket = document.getElementById('rocket');
+            const explosion = document.getElementById('explosion');
+            const messageBox = document.getElementById('messageBox');
+            const body = document.body;
+
+            // TIMELINE STARTS NOW
+
+            // 1. Launch Rocket immediately
+            rocket.classList.add('launching');
+
+            // 2. The Blast (just before rocket finishes upward path at 2000ms)
+            setTimeout(() => {
+                rocket.style.display = 'none'; // Hide rocket
+                explosion.classList.add('bang'); // Trigger boom
+            }, 1900);
+
+            // 3. Transition background to Blue & Show Cats (shortly after blast starts)
+            setTimeout(() => {
+                body.classList.add('party-mode');
+            }, 2200);
+
+            // 4. Pop out the Main Text (after background transition settles a bit)
+            setTimeout(() => {
+                 messageBox.classList.add('pop-out-anim');
+            }, 3000);
+
+            // 5. Start Balloons (after text is fully revealed)
+            setTimeout(() => {
+                 balloonInterval = setInterval(spawnBalloon, 1000); // Start the fun!
+            }, 4000);
+        };
+
+    </script>
+</body>
+</html>
